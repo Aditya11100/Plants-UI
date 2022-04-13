@@ -1,21 +1,41 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {images} from '../src/constants/images';
 import LinearGradient from 'react-native-linear-gradient';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import RangeSlider from '@jesster2k10/react-native-range-slider';
 
-const Home = () => {
+const Home = props => {
   const [active, setActive] = useState('Concept');
   const [activePlace, setActivePlace] = useState('OUTDOOR');
+  const [activeWeather, setActiveWeather] = useState('SUNNY');
+  const [picker, setPicker] = useState('xl');
   const refRBSheet = useRef();
   const titles = ['Concept', 'Popular', 'New'];
   const places = ['INDOOR', 'OUTDOOR', 'GARDEN'];
+  const weatherImage = [
+    {title: 'RAIN', images: images.drop},
+    {title: 'SUNNY', images: images.sun},
+    {title: 'HOT', images: images.temperature},
+  ];
+  const plants = [
+    {title: 'Gasteria Kyoryu', image: images.plants1},
+    {title: 'Astrophytum', image: images.plants2},
+    {title: 'Gasteria Kyoryu', image: images.plants3},
+  ];
+  const size = ['s', 'm', 'l', 'xl'];
 
   return (
-    <View style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.iconStyle}>
         <Image source={images.menu} />
         <View style={{flexDirection: 'row'}}>
@@ -41,8 +61,50 @@ const Home = () => {
       </TouchableOpacity>
       <ScrollView
         horizontal={true}
-        style={{marginTop: 33, paddingHorizontal: 12.5}}>
-        <View style={styles.cardStyle}>
+        style={{marginTop: 33, paddingHorizontal: 12.5, flexDirection: 'row'}}>
+        {plants.map(item => (
+          <TouchableOpacity
+            style={styles.cardStyle}
+            onPress={() => props.navigation.navigate('Detail')}>
+            <Text style={styles.textCard}>{item.title}</Text>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={item.image}
+                style={{height: 210, width: 200, marginTop: 30}}
+              />
+            </View>
+            <View style={{flexDirection: 'row', marginLeft: 31, marginTop: 40}}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: '700',
+                  top: 5,
+                  fontFamily: 'Lato',
+                }}>
+                {'$'}
+              </Text>
+              <Text
+                style={{fontSize: 24, fontWeight: '800', fontFamily: 'Lato'}}>
+                {'228.'}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: '800',
+                  top: 6,
+                  fontFamily: 'Lato',
+                }}>
+                {'00'}
+              </Text>
+            </View>
+            <LinearGradient
+              colors={['#1DA154', '#28CA6B']}
+              style={styles.plusUI}>
+              <Image source={images.plus} />
+            </LinearGradient>
+          </TouchableOpacity>
+        ))}
+        {/* <View style={styles.cardStyle}>
           <Text style={styles.textCard}>{'Gasteria Kyoryu'}</Text>
           <View style={{alignItems: 'center'}}>
             <Image
@@ -54,11 +116,18 @@ const Home = () => {
           <LinearGradient colors={['#1DA154', '#28CA6B']} style={styles.plusUI}>
             <Image source={images.plus} />
           </LinearGradient>
-        </View>
+        </View> */}
       </ScrollView>
+      <View style={{flexDirection: 'row', marginLeft: 36, marginTop: -20}}>
+        <View style={styles.pagination1} />
+        <View style={styles.pagination2} />
+        <View style={styles.pagination3} />
+        <View style={styles.pagination4} />
+        <View style={styles.pagination5} />
+      </View>
       <RBSheet
         ref={refRBSheet}
-        height={492}
+        height={520}
         closeOnDragDown={true}
         // closeOnPressMask={false}
         customStyles={{
@@ -77,7 +146,9 @@ const Home = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={{fontWeight: '800', fontSize: 26}}>{'FILTERS'}</Text>
+          <Text style={{fontWeight: '800', fontSize: 26, fontFamily: 'Lato'}}>
+            {'FILTERS'}
+          </Text>
           <Image source={images.cross} />
         </View>
         <View
@@ -96,8 +167,13 @@ const Home = () => {
               <Text
                 style={
                   activePlace === item
-                    ? {fontSize: 9, fontWeight: '900', color: 'white'}
-                    : {fontSize: 9, fontWeight: '900'}
+                    ? {
+                        fontSize: 9,
+                        fontWeight: '900',
+                        color: 'white',
+                        fontFamily: 'Lato',
+                      }
+                    : {fontSize: 9, fontWeight: '900', fontFamily: 'Lato'}
                 }>
                 {item}
               </Text>
@@ -110,17 +186,61 @@ const Home = () => {
         <RangeSlider
           type="range" // ios only
           min={0}
-          max={100}
-          selectedMinimum={20} // ios only
-          selectedMaximum={60} // ios only
-          tintColor="#ecf0f1"
-          handleColor="#f368e0"
+          max={400}
+          selectedMinimum={70} // ios only
+          selectedMaximum={200} // ios only
+          //   handleColor="#FFFFFF"
+          tintColor="#20B25D"
           handlePressedColor="#f368e0"
-          tintColorBetweenHandles="#ff9ff3"
+          handleBorderColor="#20B25D"
+          tintColorBetweenHandles="#20B25D"
+          minLabelColor="#000000"
+          maxLabelColor="#000000"
+          handleDiameter={15}
+          lineHeight={3}
+          maxLabelFontSize={13}
+          prefix="$"
           onChange={() => console.log('he')}
         />
+        <View
+          style={{
+            marginTop: 60,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <View style={{flexDirection: 'row'}}>
+            {weatherImage.map(item => (
+              <View>
+                <View
+                  style={
+                    activeWeather === item.title
+                      ? styles.activeWeather
+                      : styles.inActiveWeather
+                  }>
+                  <Image source={item.images} />
+                </View>
+                {activeWeather === item.title ? (
+                  <Text
+                    style={{
+                      position: 'absolute',
+                      fontSize: 9,
+                      fontWeight: '800',
+                      left: 3,
+                      top: -15,
+                    }}>
+                    {item.title}
+                  </Text>
+                ) : null}
+              </View>
+            ))}
+          </View>
+          <View style={styles.picker}>
+            <Text style={{fontWeight: '800', fontSize: 10}}>{'XL'}</Text>
+            <Image source={images.up_point} style={{marginLeft: 9}} />
+          </View>
+        </View>
       </RBSheet>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -143,12 +263,13 @@ const styles = StyleSheet.create({
   activeText: {
     fontWeight: '800',
     fontSize: 17,
-    // fontFamily: 'Lato',
+    fontFamily: 'Lato',
   },
   inActiveText: {
     fontWeight: '900',
     fontSize: 17,
     color: '#D2D2D2',
+    fontFamily: 'Lato',
   },
   borderColor: {
     height: 3,
@@ -178,13 +299,14 @@ const styles = StyleSheet.create({
     marginLeft: 31,
     fontSize: 21,
     fontWeight: '400',
-    // fontFamily: 'Lato',
+    fontFamily: 'Lato',
   },
   priceUi: {
     marginLeft: 31,
     marginTop: 40,
     fontWeight: '700',
     fontSize: 20,
+    fontFamily: 'Lato',
   },
   plusUI: {
     paddingLeft: 26,
@@ -209,5 +331,72 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     backgroundColor: '#20B25D',
     borderRadius: 16,
+  },
+  activeWeather: {
+    marginRight: 26,
+    height: 39,
+    width: 43,
+    backgroundColor: '#20B25D',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  inActiveWeather: {
+    marginRight: 26,
+    height: 39,
+    width: 43,
+    backgroundColor: '#F7F7F7',
+    borderColor: '#D3D3D3',
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  picker: {
+    height: 37,
+    width: 55,
+    borderRadius: 8,
+    borderColor: '#C2C2C2',
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  pagination1: {
+    height: 4,
+    width: 4,
+    backgroundColor: '#EAE7E7',
+    borderRadius: 4,
+    marginRight: 13,
+  },
+  pagination2: {
+    height: 4,
+    width: 4,
+    backgroundColor: '#C2C2C2',
+    borderRadius: 4,
+    marginRight: 13,
+  },
+  pagination3: {
+    height: 4,
+    width: 4,
+    backgroundColor: '#20B25D',
+    borderRadius: 4,
+    marginRight: 13,
+    borderColor: '#000000',
+    borderWidth: 0.5,
+  },
+  pagination4: {
+    height: 4,
+    width: 4,
+    backgroundColor: '#8D8D8D',
+    borderRadius: 4,
+    marginRight: 13,
+  },
+  pagination5: {
+    height: 4,
+    width: 4,
+    backgroundColor: '#777777',
+    borderRadius: 4,
+    marginRight: 13,
   },
 });

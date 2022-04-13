@@ -2,7 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Home from './screens/Home';
-
+import Details from './screens/Details';
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
@@ -12,19 +12,18 @@ const StackNavigator = () => {
         name="Home"
         component={Home}
         options={{
-          headerShadowVisible: false,
-          headerTitle: '',
-          // headerLeft: () => (
-          //   <MenuIconWrapper>
-          //     <MenuIcon width={25} height={25} />
-          //   </MenuIconWrapper>
-          // ),
-          // headerRight: () => (
-          //   <ImageCover source={UserProfileImg} resizeMode={'cover'} />
-          // ),
+          headerShown: false,
           cardStyle: {
             backgroundColor: '#fff',
           },
+        }}
+      />
+      <Stack.Screen
+        name="Detail"
+        component={Details}
+        options={{
+          headerShadowVisible: false,
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
