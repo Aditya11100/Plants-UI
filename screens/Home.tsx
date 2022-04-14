@@ -7,18 +7,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Animated,
+  Dimensions,
 } from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
 import {images} from '../src/constants/images';
 import LinearGradient from 'react-native-linear-gradient';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import RangeSlider from '@jesster2k10/react-native-range-slider';
+import Carousel from 'react-native-snap-carousel';
 
 const Home = props => {
   const [active, setActive] = useState('Concept');
   const [activePlace, setActivePlace] = useState('OUTDOOR');
   const [activeWeather, setActiveWeather] = useState('SUNNY');
   const [picker, setPicker] = useState('xl');
+  const myRef = useRef();
   const refRBSheet = useRef();
   const titles = ['Concept', 'Popular', 'New'];
   const places = ['INDOOR', 'OUTDOOR', 'GARDEN'];
@@ -32,7 +35,67 @@ const Home = props => {
     {title: 'Astrophytum', image: images.plants2},
     {title: 'Gasteria Kyoryu', image: images.plants3},
   ];
-  const size = ['s', 'm', 'l', 'xl'];
+  const SLIDER_WIDTH = Dimensions.get('window').width;
+  const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.63);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  const _renderItem = ({item}) => {
+    return (
+      <TouchableOpacity
+        style={styles.cardStyle}
+        onPress={() => props.navigation.navigate('Detail')}>
+        <Text style={styles.textCard}>{item.title}</Text>
+        <View style={{alignItems: 'center'}}>
+          <Image
+            source={item.image}
+            style={{height: 210, width: 200, marginTop: 30}}
+          />
+        </View>
+        <View style={{flexDirection: 'row', marginLeft: 31, marginTop: 40}}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: '700',
+              top: 5,
+              fontFamily: 'Lato',
+            }}>
+            {'$'}
+          </Text>
+          <Text style={{fontSize: 24, fontWeight: '800', fontFamily: 'Lato'}}>
+            {'228.'}
+          </Text>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: '800',
+              top: 6,
+              fontFamily: 'Lato',
+            }}>
+            {'00'}
+          </Text>
+        </View>
+        <LinearGradient colors={['#1DA154', '#28CA6B']} style={styles.plusUI}>
+          <Image source={images.plus} />
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  };
+
+  const pagination = () => {
+    let jsx = [];
+    for (let i = 0; i < plants.length; i++) {
+      if (i === slideIndex) {
+        jsx.push(
+          <View style={styles.activePagination1}>
+            <View style={styles.activePagination} />
+          </View>,
+        );
+      } else {
+        jsx.push(<View style={styles.pagination} />);
+      }
+    }
+    return jsx;
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -59,71 +122,76 @@ const Home = props => {
         onPress={() => refRBSheet.current.open()}>
         <Image source={images.filter} />
       </TouchableOpacity>
-      <ScrollView
-        horizontal={true}
-        style={{marginTop: 33, paddingHorizontal: 12.5, flexDirection: 'row'}}>
-        {plants.map(item => (
-          <TouchableOpacity
-            style={styles.cardStyle}
-            onPress={() => props.navigation.navigate('Detail')}>
-            <Text style={styles.textCard}>{item.title}</Text>
-            <View style={{alignItems: 'center'}}>
-              <Image
-                source={item.image}
-                style={{height: 210, width: 200, marginTop: 30}}
-              />
-            </View>
-            <View style={{flexDirection: 'row', marginLeft: 31, marginTop: 40}}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: '700',
-                  top: 5,
-                  fontFamily: 'Lato',
-                }}>
-                {'$'}
-              </Text>
-              <Text
-                style={{fontSize: 24, fontWeight: '800', fontFamily: 'Lato'}}>
-                {'228.'}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '800',
-                  top: 6,
-                  fontFamily: 'Lato',
-                }}>
-                {'00'}
-              </Text>
-            </View>
-            <LinearGradient
-              colors={['#1DA154', '#28CA6B']}
-              style={styles.plusUI}>
-              <Image source={images.plus} />
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-        {/* <View style={styles.cardStyle}>
-          <Text style={styles.textCard}>{'Gasteria Kyoryu'}</Text>
-          <View style={{alignItems: 'center'}}>
-            <Image
-              source={images.plants1}
-              style={{height: 210, width: 200, marginTop: 30}}
-            />
-          </View>
-          <Text style={styles.priceUi}>{'$228.00'}</Text>
-          <LinearGradient colors={['#1DA154', '#28CA6B']} style={styles.plusUI}>
-            <Image source={images.plus} />
-          </LinearGradient>
-        </View> */}
-      </ScrollView>
-      <View style={{flexDirection: 'row', marginLeft: 36, marginTop: -20}}>
-        <View style={styles.pagination1} />
-        <View style={styles.pagination2} />
-        <View style={styles.pagination3} />
-        <View style={styles.pagination4} />
-        <View style={styles.pagination5} />
+      <View>
+        <Carousel
+          ref={myRef}
+          data={plants}
+          renderItem={_renderItem}
+          sliderWidth={SLIDER_WIDTH}
+          itemWidth={ITEM_WIDTH}
+          inactiveSlideScale={0.8}
+          onSnapToItem={index => setSlideIndex(index)}
+        />
+        {/* <ScrollView
+          horizontal={true}
+          style={{
+            marginTop: 33,
+            paddingHorizontal: 12.5,
+            flexDirection: 'row',
+          }}>
+          {plants.map(item => (
+            <TouchableOpacity
+              style={styles.cardStyle}
+              onPress={() => props.navigation.navigate('Detail')}>
+              <Text style={styles.textCard}>{item.title}</Text>
+              <View style={{alignItems: 'center'}}>
+                <Image
+                  source={item.image}
+                  style={{height: 210, width: 200, marginTop: 30}}
+                />
+              </View>
+              <View
+                style={{flexDirection: 'row', marginLeft: 31, marginTop: 40}}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: '700',
+                    top: 5,
+                    fontFamily: 'Lato',
+                  }}>
+                  {'$'}
+                </Text>
+                <Text
+                  style={{fontSize: 24, fontWeight: '800', fontFamily: 'Lato'}}>
+                  {'228.'}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: '800',
+                    top: 6,
+                    fontFamily: 'Lato',
+                  }}>
+                  {'00'}
+                </Text>
+              </View>
+              <LinearGradient
+                colors={['#1DA154', '#28CA6B']}
+                style={styles.plusUI}>
+                <Image source={images.plus} />
+              </LinearGradient>
+            </TouchableOpacity>
+          ))}
+        </ScrollView> */}
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginLeft: 36,
+          marginTop: 70,
+          alignItems: 'center',
+        }}>
+        {pagination().map(item => item)}
       </View>
       <RBSheet
         ref={refRBSheet}
@@ -285,12 +353,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 57,
     marginRight: 27,
+    marginBottom: 33,
   },
   cardStyle: {
     height: 408,
     width: 261,
     backgroundColor: '#F1F4FB',
-    marginHorizontal: 12.5,
+    // marginHorizontal: 12.5,
     borderRadius: 30,
     overflow: 'hidden',
   },
@@ -362,40 +431,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  pagination1: {
+  activePagination: {
+    backgroundColor: '#20B25D',
     height: 4,
     width: 4,
-    backgroundColor: '#EAE7E7',
     borderRadius: 4,
+  },
+  activePagination1: {
+    backgroundColor: '#FFFFFF',
+    height: 14,
+    width: 14,
+    borderRadius: 10,
+    borderColor: '#000000',
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 13,
   },
-  pagination2: {
+  pagination: {
     height: 4,
     width: 4,
     backgroundColor: '#C2C2C2',
-    borderRadius: 4,
-    marginRight: 13,
-  },
-  pagination3: {
-    height: 4,
-    width: 4,
-    backgroundColor: '#20B25D',
-    borderRadius: 4,
-    marginRight: 13,
-    borderColor: '#000000',
-    borderWidth: 0.5,
-  },
-  pagination4: {
-    height: 4,
-    width: 4,
-    backgroundColor: '#8D8D8D',
-    borderRadius: 4,
-    marginRight: 13,
-  },
-  pagination5: {
-    height: 4,
-    width: 4,
-    backgroundColor: '#777777',
     borderRadius: 4,
     marginRight: 13,
   },
